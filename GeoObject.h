@@ -23,15 +23,15 @@ public:
 
 	double* getCenter() { return center; }
 	
-	virtual double* hit(Ray* r,double* intersect) { 	return intersect; }
+	virtual void hit(Ray* r,double* intersect) {}
 
-	virtual double* getNormal(double* loc,double* ans) { return ans; } 
+	virtual void getNormal(double* loc,double* ans) {} 
 	
 	Material* getMaterial() { return mat;}
 	
 protected:
 	
-	double *center;
+	double center[3];
 	Material *mat;
 	
 };
@@ -44,37 +44,33 @@ class Plane : public GeoObject
 {
 public:
 	
-	Plane(double* cord,double* n,Material* m)
+	Plane(double[] cord,double[] n,Material* m)
 	{
-		mat = m;
-		normal = new double[3];
+		mat = new Material(m);
 		normalize(n,normal);
-		center = cord;
+		center[0] = cord[0];
+		center[1] = cord[1];
+		center[2] = cord[2];
 		
-		delete [] n;
 	}
 	
-	double* hit(Ray* r,double* intersect);
+	void hit(Ray* r,double* intersect);
 	
-	double* getNormal(double* loc,double* ans) 
+	void getNormal(double* loc,double* ans) 
 	{
 		ans[0] = normal[0];
 		ans[1] = normal[1];
 		ans[2] = normal[2];
-		
-		return ans;
 	}
 	
 	~Plane()
 	{
-		delete [] center;
 		delete mat;
-		delete [] normal;
 	}
 	
 private:
 	
-	double* normal;
+	double normal[3];
 };
 
 /*
@@ -84,26 +80,25 @@ class Sphere: public GeoObject
 {
 public:
 	
-	Sphere(double* cen,double r,Material* m)
+	Sphere(double[] cord,double r,Material* m)
 	{
-		center = cen;
 		radius = r;
-		mat = m;
+		mat = new Material(m);
+		center[0] = cord[0];
+		center[1] = cord[1];
+		center[2] = cord[2];
 	}
 	
-	double* hit(Ray* r,double* intersect);
+	void hit(Ray* r,double* intersect);
 	
-	double* getNormal(double* loc,double* ans) 
+	void getNormal(double* loc,double* ans) 
 	{
 		subtract(loc,center,ans);
 		normalize(ans,ans);
-		
-		return ans;
 	}
 	
 	~Sphere()
 	{
-		delete [] center;
 		delete mat;
 	}
 	
@@ -119,32 +114,21 @@ class Tetrahedron: public GeoObject
 {
 public:
 	
-	Tetrahedron(double* cen,double l,Material* m);
+	Tetrahedron(double[] cord,double l,Material* m);
 	
-	double* hit(Ray* r,double* intersect);
+	void hit(Ray* r,double* intersect);
 	
-	double* getNormal(double* loc,double* ans);
+	void getNormal(double* loc,double* ans);
 	
 	~Tetrahedron()
 	{
-		delete [] vertexes[0];
-		delete [] vertexes[1];
-		delete [] vertexes[2];
-		delete [] vertexes[3];
-		delete [] vertexes;
-		delete [] normals[0];
-		delete [] normals[1];
-		delete [] normals[2];
-		delete [] normals[3];
-		delete [] normals;
-		delete [] center;
 		delete mat;
 	}
 	
 private:
 	
-	double** vertexes;
-	double** normals;
+	double vertexes[4][3];
+	double normals[4][3];
 	double length;
 };
 
@@ -155,35 +139,22 @@ class Dodecahedron: public GeoObject
 {
 public:
 	
-	Dodecahedron(double* cen,double l,Material* m);
+	Dodecahedron(double[] cen,double l,Material* m);
 	
-	double* hit(Ray* r,double* intersect);
+	void hit(Ray* r,double* intersect);
 	
-	double* getNormal(double* loc,double* ans);
+	void getNormal(double* loc,double* ans);
 	
 	~Dodecahedron()
 	{
-		for(int i=0;i<20;i++)
-		{
-			delete [] vertexes[i];
-		}
-		for(int i=0;i<12;i++)
-		{
-			delete [] faces[i];
-			delete [] normals[i];
-		}
-		delete [] vertexes;
-		delete [] faces;
-		delete [] normals;
-		delete [] center;
 		delete mat;
 	}
 	
 private:
 	
-	double** vertexes;
-	double** normals;
-	int** faces;
+	double vertexes[20][3];
+	double normals[12][3];
+	int faces[12][5];
 	double length;	
 };
 

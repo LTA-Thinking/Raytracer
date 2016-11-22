@@ -7,7 +7,7 @@ using std::abs;
 using std::cout;
 using std::endl;
 
-double* Plane::hit(Ray *r, double *intersect)
+void Plane::hit(Ray *r, double *intersect)
 {
 	//cout << "Step 1" << endl;
 	
@@ -19,7 +19,7 @@ double* Plane::hit(Ray *r, double *intersect)
 		intersect[0] = source[0];
 		intersect[1] = source[1];
 		intersect[2] = source[2];
-		return intersect;
+		return;
 	}
 	
 	//cout << "Step 2" << endl;
@@ -32,15 +32,13 @@ double* Plane::hit(Ray *r, double *intersect)
 		intersect[0] = source[0];
 		intersect[1] = source[1];
 		intersect[2] = source[2];
-		return intersect;
+		return;
 	}
 	//cout << "Step 3 " << t << endl;
 	add(multiply(t,r->getDirection(),ans),r->getSource(),intersect);
-	
-	return intersect;
 } 
 
-double* Sphere::hit(Ray *r,double *intersect)
+void Sphere::hit(Ray *r,double *intersect)
 {
 	double* dir = new double[3];
 
@@ -57,13 +55,13 @@ double* Sphere::hit(Ray *r,double *intersect)
 		intersect[0] = source[0];
 		intersect[1] = source[1];
 		intersect[2] = source[2];
-		return intersect;
+		return;
 	}
 	
 	double y = pow(pow(radius,2)-pow(x,2),0.5);
 	double d = pow(pow(dist,2)-pow(x,2),0.5);
 	
-	double* intArm = new double[3];
+	double intArm[3];
 	multiply(d-y,r->getDirection(),intArm);
 	add(intArm,r->getSource(),intersect);
 	
@@ -76,20 +74,17 @@ double* Sphere::hit(Ray *r,double *intersect)
 	delete [] intArm;
 	delete [] dir;
 	
-	return intersect;
+	return;
 }
 
-Tetrahedron::Tetrahedron(double *cen, double l, Material *m)
+Tetrahedron::Tetrahedron(double *cord, double l, Material *m)
 {
-	center = cen;
-	length = l;
-	mat = m;
+	center[0] = cord[0];
+	center[1] = cord[1];
+	center[2] = cord[2];
 	
-	vertexes = new double*[4];
-	vertexes[0] = new double[3];
-	vertexes[1] = new double[3];
-	vertexes[2] = new double[3];
-	vertexes[3] = new double[3];
+	length = l;
+	mat = new Material(m);
 	
 	vertexes[0][0] = 1+cen[0];
 	vertexes[0][1] = 0+cen[1];
@@ -107,12 +102,6 @@ Tetrahedron::Tetrahedron(double *cen, double l, Material *m)
 	vertexes[3][1] = -1+cen[1];
 	vertexes[3][2] = 1/pow(2,0.5)+cen[2];
 	
-	normals = new double*[4];
-	normals[0] = new double[3];
-	normals[1] = new double[3];
-	normals[2] = new double[3];
-	normals[3] = new double[3];
-	
 	subtract(center,vertexes[0],normals[0]);
 	normalize(normals[0],normals[0]);
 	
@@ -126,7 +115,7 @@ Tetrahedron::Tetrahedron(double *cen, double l, Material *m)
 	normalize(normals[3],normals[3]);
 }
 
-double* Tetrahedron::hit(Ray *r, double *intersect)
+void Tetrahedron::hit(Ray *r, double *intersect)
 {
 	double beta, gamma, t, det, bottom, minDis = 100000;
 	double* s = r->getSource();
@@ -189,11 +178,9 @@ double* Tetrahedron::hit(Ray *r, double *intersect)
 		intersect[1] = s[1];
 		intersect[2] = s[2];
 	}
-	
-	return intersect;
 }
 
-double* Tetrahedron::getNormal(double *loc, double *ans)
+void Tetrahedron::getNormal(double *loc, double *ans)
 {
 	double beta, gamma, z;
 		
@@ -212,38 +199,25 @@ double* Tetrahedron::getNormal(double *loc, double *ans)
 			ans[1] = normals[(i+3)%4][1];
 			ans[2] = normals[(i+3)%4][2];
 		
-			return ans;
+			return;
 		}
 	}
 	
 	ans[0] = 0;
 	ans[1] = 0;
 	ans[2] = 0;
-	
-	return ans;
 }
 
-Dodecahedron::Dodecahedron(double *cen, double l, Material *m)
+Dodecahedron::Dodecahedron(double[] cord, double l, Material *m)
 {
-	center = cen;
+	center[0] = cord[0];
+	center[1] = cord[1];
+	center[2] = cord[2];
+	
 	length = l;
-	mat = m;
+	mat = new Material(m);
 	
-	vertexes = new double*[20];
-	faces = new int*[12];
-	normals = new double*[12];
-	
-	double phi = (1+pow(5,0.5))/2;
-	
-	for(int i=0;i<20;i++)
-	{
-		vertexes[i] = new double[3];
-	}
-	for(int i=0;i<12;i++)
-	{
-		faces[i] = new int[5];
-		normals[i] = new double[3];
-	}
+	double phi = (1+pow(5,0.5))/2;	
 	
 	vertexes[0][0] = 1+center[0];
 	vertexes[0][1] = 1+center[1];
@@ -420,7 +394,7 @@ Dodecahedron::Dodecahedron(double *cen, double l, Material *m)
 	}
 }
 
-double* Dodecahedron::hit(Ray* r,double *intersect)
+void Dodecahedron::hit(Ray* r,double *intersect)
 {
 	double beta, gamma, t, det, bottom, minDis = 100000;
 	double* s = r->getSource();
@@ -487,11 +461,9 @@ double* Dodecahedron::hit(Ray* r,double *intersect)
 		intersect[1] = s[1];
 		intersect[2] = s[2];
 	}
-	
-	return intersect;
 }
 
-double* Dodecahedron::getNormal(double *loc, double *ans)
+void Dodecahedron::getNormal(double *loc, double *ans)
 {
 	double dis;
 		
@@ -505,12 +477,11 @@ double* Dodecahedron::getNormal(double *loc, double *ans)
 			ans[1] = normals[i][1];
 			ans[2] = normals[i][2];
 			
-			return ans;
+			return;
 		}
 	}
 	
 	ans[0] = 0;
 	ans[1] = 0;
 	ans[2] = 0;
-	return ans;
 }

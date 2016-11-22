@@ -13,24 +13,14 @@ class Ray
 {
 public:
 
-	Ray(double ex,double ey,double ez,double dx,double dy,double dz)
+	Ray(double[] s,double[] d)
 	{
-		source = new double[3];
-		direction = new double[3];
-		source[0] = ex;
-		source[1] = ey;
-		source[2] = ez;
-		direction[0] = dx;
-		direction[1] = dy;
-		direction[2] = dz;
-		
-		normalize(direction,direction);
-	}
-	
-	Ray(double e[3],double d[3]) 
-	{
-		source = e;
-		direction = d;
+		source[0] = s[0];
+		source[1] = s[1];
+		source[2] = s[2];
+		direction[0] = d[0];
+		direction[1] = d[1];
+		direction[2] = d[2];
 		
 		normalize(direction,direction);
 	}
@@ -38,15 +28,10 @@ public:
 	double* getSource() {return source;}
 	double* getDirection() {return direction;}
 	
-	~Ray() {
-		delete [] source;
-		delete [] direction;
-	}
-	
 private:
 
-	double* source;
-	double* direction;
+	double source[3];
+	double direction[3];
 
 };
 
@@ -60,23 +45,36 @@ public:
 
 	Material(double* d,double* s) 
 	{
-		diffuse = d;
-		specular = s;
+		diffuse[0] = d[0];
+		diffuse[1] = d[1];
+		diffuse[2] = d[2];
+		
+		specular[0] = s[0];
+		specular[1] = s[1];
+		specular[2] = s[2];
+	}
+	
+	Material(Material *m)
+	{
+		double *d = m->getDiffuse();
+		double *s = m->getSpecular();
+		
+		diffuse[0] = d[0];
+		diffuse[1] = d[1];
+		diffuse[2] = d[2];
+		
+		specular[0] = s[0];
+		specular[1] = s[1];
+		specular[2] = s[2];
 	}
 	
 	double* getDiffuse() {return diffuse;}
 	double* getSpecular() {return specular;}
 	
-	~Material()
-	{
-		delete [] diffuse;
-		delete [] specular;
-	}
-	
 private:
 	
-	double* diffuse;
-	double* specular;
+	double diffuse[3];
+	double specular[3];
 	
 };
 
@@ -88,11 +86,19 @@ class Light
 {
 public:
 		
-	Light(double* s,double* dif,double* spe)
+	Light(double[] s,double[] d,double[] spe)
 	{
-		source = s;
-		diffuce = dif;
-		specular = spe;
+		source[0] = s[0];
+		source[1] = s[1];
+		source[2] = s[2];
+		
+		diffuse[0] = d[0];
+		diffuse[1] = d[1];
+		diffuse[2] = d[2];
+		
+		specular[0] = spe[0];
+		specular[1] = spe[1];
+		specular[2] = spe[2];
 	}
 	
 	double* getSource() {return source;}
@@ -100,18 +106,36 @@ public:
 	double* getDiffuse() {return diffuce;}
 	
 	double* getSpecular() {return specular;}
-	
-	~Light()
-	{
-		delete [] source;
-		delete [] diffuce;
-		delete [] specular;
-	}
 		
 private :
 	
-	double* source;
-	double* diffuce;
-	double* specular;
+	double source[3];
+	double diffuce[3];
+	double specular[3];
+	
+};
+
+class Camera
+{
+public:
+	
+	Camera(double[] cord,double angle,int w,int h,double p,double y,double r)
+	{
+		center[0] = cord[0];
+		center[1] = cord[1];
+		center[2] = cord[2];
+		
+		view_angle = angle;
+		width = w;
+		height = h;
+		pitch = p;
+		yaw = y;
+		roll = r;
+	}
+
+private:
+	
+	double center[3];
+	double view_angle,width,height,pitch,yaw,roll;
 	
 };
