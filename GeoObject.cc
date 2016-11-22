@@ -7,35 +7,42 @@ using std::abs;
 using std::cout;
 using std::endl;
 
-void Plane::hit(Ray *r, double *intersect)
+void Plane::hit(Ray *r, double intersect[3])
 {
-	//cout << "Step 1" << endl;
+	double normal[3] = getNormal();
 	
 	double denom = dotProduct(r->getDirection(),normal);
 	
 	if(denom==0)
 	{
 		double* source = r->getSource();
-		intersect[0] = source[0];
-		intersect[1] = source[1];
-		intersect[2] = source[2];
+		copy(source,intersect);
 		return;
 	}
 	
-	//cout << "Step 2" << endl;
 	double ans[3];
-	double t = (dotProduct(subtract(center,r->getSource(),ans),normal))/denom;
+	subtract(center,r->getSource(),ans);
+	
+	double t = (dotProduct(ans,normal))/denom;
 	
 	if(t<0)
 	{
 		double* source = r->getSource();
-		intersect[0] = source[0];
-		intersect[1] = source[1];
-		intersect[2] = source[2];
+		copy(source,intersect);
 		return;
 	}
-	//cout << "Step 3 " << t << endl;
-	add(multiply(t,r->getDirection(),ans),r->getSource(),intersect);
+
+	multiply(t,r->getDirection(),ans);
+	add(ans,r->getSource(),intersect);
+	
+	double intersect_vector[3];
+	double x_vector[3],y_vector[3];
+	
+	subtract(x_distance_point,center,x_vector);
+	subtract(y_distance_point,center,y_vector);
+	subtract(intersect,center,intersect_vector);
+	
+	// Current point, checking whether the intersect point is on the non-infinite plane...
 } 
 
 void Sphere::hit(Ray *r,double *intersect)

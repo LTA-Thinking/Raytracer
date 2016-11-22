@@ -13,14 +13,10 @@ class Ray
 {
 public:
 
-	Ray(double[] s,double[] d)
+	Ray(double s[3],double d[3])
 	{
-		source[0] = s[0];
-		source[1] = s[1];
-		source[2] = s[2];
-		direction[0] = d[0];
-		direction[1] = d[1];
-		direction[2] = d[2];
+		copy(s,source);
+		copy(d,direction);
 		
 		normalize(direction,direction);
 	}
@@ -43,15 +39,10 @@ class Material
 {
 public:
 
-	Material(double* d,double* s) 
+	Material(double d[3],double s[3]) 
 	{
-		diffuse[0] = d[0];
-		diffuse[1] = d[1];
-		diffuse[2] = d[2];
-		
-		specular[0] = s[0];
-		specular[1] = s[1];
-		specular[2] = s[2];
+		copy(d,diffuse);
+		copy(s,specular);
 	}
 	
 	Material(Material *m)
@@ -59,13 +50,8 @@ public:
 		double *d = m->getDiffuse();
 		double *s = m->getSpecular();
 		
-		diffuse[0] = d[0];
-		diffuse[1] = d[1];
-		diffuse[2] = d[2];
-		
-		specular[0] = s[0];
-		specular[1] = s[1];
-		specular[2] = s[2];
+		copy(d,diffuse);
+		copu(s,specular);
 	}
 	
 	double* getDiffuse() {return diffuse;}
@@ -86,19 +72,12 @@ class Light
 {
 public:
 		
-	Light(double[] s,double[] d,double[] spe)
+	Light(double s[4],double d[3],double spe[3])
 	{
-		source[0] = s[0];
-		source[1] = s[1];
-		source[2] = s[2];
+		copy(s,source);
 		
-		diffuse[0] = d[0];
-		diffuse[1] = d[1];
-		diffuse[2] = d[2];
-		
-		specular[0] = spe[0];
-		specular[1] = spe[1];
-		specular[2] = spe[2];
+		copy(d,diffuse);
+		copy(spe,specular);
 	}
 	
 	double* getSource() {return source;}
@@ -119,11 +98,9 @@ class Camera
 {
 public:
 	
-	Camera(double[] cord,double angle,int w,int h,double p,double y,double r)
+	Camera(double cord[4],double angle,int w,int h,double p,double y,double r)
 	{
-		center[0] = cord[0];
-		center[1] = cord[1];
-		center[2] = cord[2];
+		copy(cord,center);
 		
 		view_angle = angle;
 		width = w;
@@ -135,7 +112,7 @@ public:
 
 private:
 	
-	double center[3];
+	double center[4];
 	double view_angle,width,height,pitch,yaw,roll;
 	
 };

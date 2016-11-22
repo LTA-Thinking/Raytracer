@@ -21,6 +21,23 @@ class GeoObject
 {
 public:
 
+	virtual GeoObject(double transform[4][4],Material *m)
+	{
+		mat = new Material(m);
+		for(int i=0;i<4;i++)
+		{
+			for(int j=0;j<4;j++)
+			{
+				transformation[i][j] = transform[i][j];
+			}
+		}
+		
+		center[0] = 0;
+		center[1] = 0;
+		center[2] = 0;
+		center[3] = 1;
+	}
+
 	double* getCenter() { return center; }
 	
 	virtual void hit(Ray* r,double* intersect) {}
@@ -29,9 +46,15 @@ public:
 	
 	Material* getMaterial() { return mat;}
 	
+	~GeoObject()
+	{
+		delete mat;
+	}
+	
 protected:
 	
 	double center[3];
+	double transformation[4][4];
 	Material *mat;
 	
 };
@@ -44,33 +67,48 @@ class Plane : public GeoObject
 {
 public:
 	
-	Plane(double[] cord,double[] n,Material* m)
+	Plane(double transform[4][4],Material *m): GeoObject(transform, m)
 	{
-		mat = new Material(m);
-		normalize(n,normal);
-		center[0] = cord[0];
-		center[1] = cord[1];
-		center[2] = cord[2];
+		normal_point[0] = 0;
+		normal_point[1] = 0;
+		normal_point[2] = 1;
 		
+		x_distance_point[0] = 1;
+		x_distance_point[1] = 0;
+		x_distance_point[2] = 0;
+		
+		y_distance_point[0] = 0;
+		y_distance_point[1] = 1;
+		y_distance_point[2] = 0;
+		
+		double ans[3];
+		
+		mat_mult4x1(transform,center,ans);
+		copy(ans,center);
+		
+		mat_mult4x1(transform,normal_point,ans);
+		copy(ans,normal_point);
+		
+		mat_mult4x1(transform,x_distance_point,ans);
+		copy(ans,x_distance_point);
+		
+		mat_mult4x1(transform,y_distance_point,ans);
+		copy(ans,y_distance_point);
 	}
 	
 	void hit(Ray* r,double* intersect);
 	
 	void getNormal(double* loc,double* ans) 
 	{
-		ans[0] = normal[0];
-		ans[1] = normal[1];
-		ans[2] = normal[2];
-	}
-	
-	~Plane()
-	{
-		delete mat;
+		subtract(normal_point,center_point,ans);
+		normalize(ans,ans);
 	}
 	
 private:
 	
-	double normal[3];
+	double normal_point[3];
+	double x_distance_point[3];
+	double y_distance_point[3];
 };
 
 /*
@@ -80,13 +118,9 @@ class Sphere: public GeoObject
 {
 public:
 	
-	Sphere(double[] cord,double r,Material* m)
+	Sphere(double transform[4][4],Material *m): GeoObject(transform, m)
 	{
-		radius = r;
-		mat = new Material(m);
-		center[0] = cord[0];
-		center[1] = cord[1];
-		center[2] = cord[2];
+		
 	}
 	
 	void hit(Ray* r,double* intersect);
@@ -95,11 +129,6 @@ public:
 	{
 		subtract(loc,center,ans);
 		normalize(ans,ans);
-	}
-	
-	~Sphere()
-	{
-		delete mat;
 	}
 	
 private:
@@ -114,16 +143,11 @@ class Tetrahedron: public GeoObject
 {
 public:
 	
-	Tetrahedron(double[] cord,double l,Material* m);
+	Tetrahedron(double transform[4][4],Material *m): GeoObject(transform, m);
 	
 	void hit(Ray* r,double* intersect);
 	
 	void getNormal(double* loc,double* ans);
-	
-	~Tetrahedron()
-	{
-		delete mat;
-	}
 	
 private:
 	
@@ -139,16 +163,11 @@ class Dodecahedron: public GeoObject
 {
 public:
 	
-	Dodecahedron(double[] cen,double l,Material* m);
+	Dodecahedron(double transform[4][4],Material *m): GeoObject(transform, m);
 	
 	void hit(Ray* r,double* intersect);
 	
 	void getNormal(double* loc,double* ans);
-	
-	~Dodecahedron()
-	{
-		delete mat;
-	}
 	
 private:
 	
