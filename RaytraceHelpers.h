@@ -1,4 +1,5 @@
 #include "VectorHelpers.h"
+#include <string>
 /*
 	This file contains classes that are used to hold information on common objects used in raytracing.
 	
@@ -16,8 +17,7 @@ public:
 	Ray(double s[3],double d[3])
 	{
 		copy(s,source);
-		copy(d,direction);
-		
+		copy(d,direction);		
 		normalize(direction,direction);
 	}
 	
@@ -39,28 +39,36 @@ class Material
 {
 public:
 
-	Material(double d[3],double s[3]) 
+	Material(std::string n,double a[3],double d[3],double s[3]) 
 	{
+		name = n;
+		copy(a,ambient);
 		copy(d,diffuse);
 		copy(s,specular);
 	}
 	
 	Material(Material *m)
 	{
+		double *a = m->getAmbient();
 		double *d = m->getDiffuse();
 		double *s = m->getSpecular();
 		
+		copy(a,ambient);
 		copy(d,diffuse);
-		copu(s,specular);
+		copy(s,specular);
 	}
 	
+	std::string getName(){return name;}
+	double* getAmbient(){return ambient;}
 	double* getDiffuse() {return diffuse;}
 	double* getSpecular() {return specular;}
 	
 private:
 	
+	double ambient[3];
 	double diffuse[3];
 	double specular[3];
+	std::string name;
 	
 };
 
@@ -72,22 +80,22 @@ class Light
 {
 public:
 		
-	Light(double s[4],double d[3],double spe[3])
+	Light(std::string n,double s[3],double d[3],double spe[3])
 	{
-		copy(s,source);
-		
-		copy(d,diffuse);
+		name = n;
+		copy(s,source);		
+		copy(d,diffuce);
 		copy(spe,specular);
 	}
 	
+	std::string getName(){return name;}
 	double* getSource() {return source;}
-	
-	double* getDiffuse() {return diffuce;}
-	
+	double* getDiffuce() {return diffuce;}
 	double* getSpecular() {return specular;}
 		
 private :
 	
+	std::string name;
 	double source[3];
 	double diffuce[3];
 	double specular[3];
@@ -97,22 +105,60 @@ private :
 class Camera
 {
 public:
-	
-	Camera(double cord[4],double angle,int w,int h,double p,double y,double r)
+	// change this to use a normal transform matrix, or a direction vector
+	Camera(std::string n,double t[4][4],double angle,int w,int h)
 	{
-		copy(cord,center);
+		name = n;
+		
+		for(int i=0;i<4;i++)
+		{
+			for(int j=0;j<4;j++)
+			{
+				transform[i][j] = t[i][j];
+			}
+		}
+		
+		center[0] = 0;
+		center[1] = 0;
+		center[2] = 0;
+		
+		double ans[3];
+		mat_mult4x1(transform,center,ans);
+		copy(ans,center);
 		
 		view_angle = angle;
 		width = w;
 		height = h;
-		pitch = p;
-		yaw = y;
-		roll = r;
+	}
+	
+	std::string getName(){return name;}
+	double getAngle(){return view_angle;}
+	double getWidth(){return width;}
+	double getHeight(){return height;}
+	double* getCenter(){return center;}
+	
+	void getDirection(double ans[3])
+	{
+		double dir[3] = {0,0,1};
+		mat_mult4x1(transform,dir,ans);
+	}
+	
+	void screenCoordinate(double percent_width,double percent_height,double cords[3])
+	{
+		cords[0] = width*(percent_width-0.5);
+		cords[1] = height*(percent_height-0.5);
+		cords[2] = 0;
+		
+		double ans[3];
+		mat_mult4x1(transform,cords,ans);
+		copy(ans,cords);
 	}
 
 private:
 	
-	double center[4];
-	double view_angle,width,height,pitch,yaw,roll;
+	std::string name;
+	double center[3];
+	double transform[4][4];
+	double view_angle,width,height;
 	
 };

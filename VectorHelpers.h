@@ -30,7 +30,7 @@ void transpose3(double x[3][3],double ans[3][3]);
 
 void mat_mult4x4(double x[4][4],double y[4][4],double ans[4][4]);
 
-void mat_mult4x1(double x[4][4],double y[4],double ans[4]);
+void mat_mult4x1(double x[4][4],double y[3],double ans[3]);
 
 void transpose4(double x[4][4],double ans[4][4]);
 

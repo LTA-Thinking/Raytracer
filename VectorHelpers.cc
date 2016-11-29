@@ -133,7 +133,7 @@ void mat_mult4x1(double x[4][4],double y[3],double ans[3])
 {
 	for(int i=0;i<3;i++)
 	{
-		ans[i] = x[i][0]*y[0]+x[i][1]*y[1]+x[i][2]*y[2]+x[i][3]*y[3];
+		ans[i] = x[i][0]*y[0]+x[i][1]*y[1]+x[i][2]*y[2]+x[i][3]*1;
 	}
 }
 

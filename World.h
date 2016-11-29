@@ -1,3 +1,4 @@
+//#include "ClrFileOperations.h"
 #include "GeoObject.h"
 #include <list>
 #include <string>
@@ -18,12 +19,12 @@ class World
 
 public:
 	
-	World();
+	World(std::string path);
 	
 	// width and height in pixels, eye is the location of the eye, distance is the distance between the eye and the draw plate, theta is the rotation around the z axis, phi is the rotation around the xy plane, and alpha is the local rotation around it's center point.
-	void drawImage(std::string image_name, std::string camera_name);
+	void drawImage(std::string image_name, std::string camera_name, int widthPixels, int heightPixels);
 	
-	unsigned char* raytrace(Ray* ray,unsigned char* pixel);
+	void raytrace(Ray* ray,unsigned char pixel[3]);
 	
 	~World()
 	{
