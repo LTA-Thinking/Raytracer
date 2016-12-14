@@ -96,7 +96,7 @@ void Sphere::hit(Ray *r,double intersect[3])
 	return;
 }
 
-Tetrahedron::Tetrahedron(double transform[4][4],Material *m): GeoObject(transform, m)
+Tetrahedron::Tetrahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
 {	
 	vertexes[0][0] = 1;
 	vertexes[0][1] = 0;
@@ -236,7 +236,7 @@ void Tetrahedron::getNormal(double *loc, double *ans)
 	ans[2] = 0;
 }
 
-Dodecahedron::Dodecahedron(double transform[4][4],Material *m): GeoObject(transform, m)
+Dodecahedron::Dodecahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
 {
 	double phi = (1+pow(5,0.5))/2;	
 	

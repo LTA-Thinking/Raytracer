@@ -1,4 +1,5 @@
 #include "World.h"
+#include "ClrFileOperations.h"
 #include "image.h"
 #include <math.h>
 #include <iostream>
@@ -8,15 +9,12 @@ using std::endl;
 
 World::World(std::string path)
 {
-		//loadClrFileForRaytrace(path,obj,lights,cameras,ambientLight);
+		loadClrFileForRaytrace(path,&materials,&obj,&lights,&cameras,ambientLight);
 }
 
-void World::drawImage(std::string image_name, std::string camera_name, int widthPixels, int heightPixels) 
+void World::drawImage(std::string image_name, std::string camera_name, int widthPixels) 
 {
 	cout << "starting image" << endl;
-	
-	Image output(heightPixels,widthPixels,3);
-	Ray *ray;
 	
 	Camera *main_camera;
 	
@@ -28,6 +26,18 @@ void World::drawImage(std::string image_name, std::string camera_name, int width
 			break;
 		}
 	}
+	
+	for(obj_it = obj.begin();obj_it != obj.end();obj_it++)
+	{
+		printf("%s %s \n",(*obj_it)->getName().c_str(),(*obj_it)->getMaterial()->getName().c_str());
+	}
+		
+	printf("%d %d %d %d \n",materials.size(),lights.size(),cameras.size(),obj.size());
+	
+	int heightPixels = (main_camera->getHeight()*widthPixels)/main_camera->getWidth();
+	
+	Image output(heightPixels,widthPixels,3);
+	Ray *ray;
 	
 	double cen[3];
 	copy(main_camera->getCenter(),cen);
@@ -45,7 +55,8 @@ void World::drawImage(std::string image_name, std::string camera_name, int width
 	multiply(-distance,eye_dir,eye_dir);
 	add(cen,eye_dir,eye);
 	
-	cout << "starting to find pixels" << endl;
+	printf("eye %f %f %f \n",eye[0],eye[1],eye[2]);
+	cout << "starting to find pixels " << output.getRows() << " " << output.getCols() << endl;
 	
 	for (int i = 0; i < output.getRows(); i++) 
 	{
@@ -57,6 +68,9 @@ void World::drawImage(std::string image_name, std::string camera_name, int width
 			
 			double dir[3];
 			subtract(cord,eye,dir);
+
+			//printf("cord %f %f %f\n",cord[0],cord[1],cord[2]);
+			//printf("dir %f %f %f\n",dir[0],dir[1],dir[2]);
 			
 			ray = new Ray(eye,dir);
 			unsigned char pixel[3];
@@ -194,14 +208,14 @@ void World::raytrace(Ray* ray, unsigned char pixel[3])
 			delete r;
 		}
 		
-		pixel[0] = static_cast<unsigned char>(std::min(255.0,(ambientLight[0]+m_diffuse[0]*tot_l_d[0]+m_specular[0]*tot_l_s[0])));
-		pixel[1] = static_cast<unsigned char>(std::min(255.0,(ambientLight[1]+m_diffuse[1]*tot_l_d[1]+m_specular[1]*tot_l_s[1])));
-		pixel[2] = static_cast<unsigned char>(std::min(255.0,(ambientLight[2]+m_diffuse[2]*tot_l_d[2]+m_specular[2]*tot_l_s[2])));
+		pixel[0] = static_cast<unsigned char>(255*std::min(1.0,(ambientLight[0]+m_diffuse[0]*tot_l_d[0]+m_specular[0]*tot_l_s[0])));
+		pixel[1] = static_cast<unsigned char>(255*std::min(1.0,(ambientLight[1]+m_diffuse[1]*tot_l_d[1]+m_specular[1]*tot_l_s[1])));
+		pixel[2] = static_cast<unsigned char>(255*std::min(1.0,(ambientLight[2]+m_diffuse[2]*tot_l_d[2]+m_specular[2]*tot_l_s[2])));
 	}
 	else
 	{
-		pixel[0] = static_cast<unsigned char>(ambientLight[0]);
-		pixel[1] = static_cast<unsigned char>(ambientLight[1]);
-		pixel[2] = static_cast<unsigned char>(ambientLight[2]);
+		pixel[0] = static_cast<unsigned char>(255*ambientLight[0]);
+		pixel[1] = static_cast<unsigned char>(255*ambientLight[1]);
+		pixel[2] = static_cast<unsigned char>(255*ambientLight[2]);
 	}
 }

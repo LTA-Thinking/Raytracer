@@ -1,0 +1,52 @@
+<?xml version=”1.0” encoding=”utf-8”?>
+<CLEAR version='0.1'>
+	<file_information>
+		<author>RB Johnson</author>
+		<authoring_tool>Notepad++</authoring_tool>
+		<created>2016:12:5:16:33:54</created>
+		<modified>2016:12:5:16:33:54</modified>
+	</file_information>
+	<scene>
+		<string id='name'>Scene 1</string>
+		<color id='ambient'> 0.2 0.2 0.2 </color>
+		<assets>
+			<material>
+				<string id='name'>Mat 1</string>
+				<color id='ambient'> 0.4 0.0 0.0 </color>
+				<color id='diffuse'> 0.7 0.4 0.1 </color>
+				<color id='specular'> 0.3 0.3 0.3 </color>
+			</material>
+			<light>
+				<string id='name'>Light 1</string>
+				<vec3 id='location'> 1.0 0.0 2.0 </vec3>
+				<color id='diffuse'> 0.8 0.8 0.8 </vec3>
+				<color id='specular'> 0.2 0.2 0.2 </vec3>
+			</light>
+			<camera>
+				<string id='name'>Camera 1</string>
+				<mat4 id='transform'>
+					<vec4> 1.0 0.0 0.0 0.0 </vec4>
+					<vec4> 0.0 1.0 0.0 0.0 </vec4>
+					<vec4> 0.0 0.0 1.0 0.0 </vec4>
+					<vec4> 0.0 0.0 0.0 1.0 </vec4>
+				</mat4>
+				<float id='angle'> 0.785 </float>
+				<float id='width'> 2.66 </float>
+				<float id='height'> 2.0 </float>
+			</camera>
+		</assets>
+		<entities>
+			<object>
+				<string id='name'>Sphere</string>
+				<string id='type'>ELLIPSE</string>
+				<string id='material_name'>Mat 1</string>
+				<mat4 id='transform'>
+					<vec4> 1.0 0.0 0.0 0.0 </vec4>
+					<vec4> 0.0 1.0 0.0 0.0 </vec4>
+					<vec4> 0.0 0.0 1.0 4.0 </vec4>
+					<vec4> 0.0 0.0 0.0 1.0 </vec4>
+				</mat4>
+			</object>
+		</entities>
+	</scene>
+</CLEAR>

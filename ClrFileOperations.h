@@ -1,8 +1,10 @@
-#include "GeoObject.h"
 #include <string>
 #include <list>
 
-using std::list;
+using namespace std;
 
-void loadClrFileForRaytrace(std::string filePath,list<GeoObject*> objects,list<Light*> lights,list<Camera*> cameras,double ambientLight[3])
-{}
+string substring(string s,int start,int end);
+
+string substring(string s,int start);
+
+void loadClrFileForRaytrace(string filePath,list<Material*> *materials,list<GeoObject*> *objects,list<Light*> *lights,list<Camera*> *cameras,double ambientLight[3]);

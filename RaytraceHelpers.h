@@ -1,5 +1,7 @@
 #include "VectorHelpers.h"
 #include <string>
+#include <iostream>
+#include <cstdio>
 /*
 	This file contains classes that are used to hold information on common objects used in raytracing.
 	
@@ -49,6 +51,7 @@ public:
 	
 	Material(Material *m)
 	{
+		name = m->getName();
 		double *a = m->getAmbient();
 		double *d = m->getDiffuse();
 		double *s = m->getSpecular();
@@ -145,13 +148,15 @@ public:
 	
 	void screenCoordinate(double percent_width,double percent_height,double cords[3])
 	{
+		//printf("Screen Cord %f %f\n",percent_width,percent_height);
 		cords[0] = width*(percent_width-0.5);
 		cords[1] = height*(percent_height-0.5);
 		cords[2] = 0;
-		
+		//printf("%f %f %f\n",cords[0],cords[1],cords[2]);
 		double ans[3];
 		mat_mult4x1(transform,cords,ans);
 		copy(ans,cords);
+		//printf("%f %f %f\n",cords[0],cords[1],cords[2]);
 	}
 
 private:

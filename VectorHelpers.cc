@@ -1,3 +1,4 @@
+#include "VectorHelpers.h"
 #include <iostream>
 #include <math.h>
 

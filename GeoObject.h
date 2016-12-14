@@ -1,5 +1,6 @@
 #include "RaytraceHelpers.h"
 #include "VectorHelpers.h"
+#include <string>
 
 /*
 	This file has information on GeoObject and its subclasses. 
@@ -21,7 +22,7 @@ class GeoObject
 {
 public:
 
-	GeoObject(double transform[4][4],Material *m)
+	GeoObject(std::string name, double transform[4][4],Material *m)
 	{
 		mat = new Material(m);
 		for(int i=0;i<4;i++)
@@ -39,6 +40,7 @@ public:
 		double ans[3];
 		mat_mult4x1(transform,center,ans);
 		copy(ans,center);
+		obj_name = name;
 	}
 
 	double* getCenter() { return center; }
@@ -48,6 +50,8 @@ public:
 	virtual void getNormal(double loc[3],double ans[3]) {} 
 	
 	Material* getMaterial() { return mat;}
+	
+	std::string getName() {return obj_name;}
 	
 	~GeoObject()
 	{
@@ -59,6 +63,7 @@ protected:
 	double center[3];
 	double transformation[4][4];
 	Material *mat;
+	std::string obj_name;
 	
 };
 
@@ -70,7 +75,7 @@ class Plane : public GeoObject
 {
 public:
 	
-	Plane(double transform[4][4],Material *m): GeoObject(transform, m)
+	Plane(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
 	{
 		normal_point[0] = 0.0;
 		normal_point[1] = 0.0;
@@ -118,7 +123,7 @@ class Sphere: public GeoObject
 {
 public:
 	
-	Sphere(double transform[4][4],Material *m): GeoObject(transform, m)
+	Sphere(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
 	{
 		radius_point[0] = 0.0;
 		radius_point[1] = 0.0;
@@ -149,7 +154,7 @@ class Tetrahedron: public GeoObject
 {
 public:
 	
-	Tetrahedron(double transform[4][4],Material *m);
+	Tetrahedron(std::string name,double transform[4][4],Material *m);
 	
 	void hit(Ray* r,double* intersect);
 	
@@ -169,7 +174,7 @@ class Dodecahedron: public GeoObject
 {
 public:
 	
-	Dodecahedron(double transform[4][4],Material *m);
+	Dodecahedron(std::string name,double transform[4][4],Material *m);
 	
 	void hit(Ray* r,double intersect[3]);
 	

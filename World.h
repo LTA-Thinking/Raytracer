@@ -22,12 +22,16 @@ public:
 	World(std::string path);
 	
 	// width and height in pixels, eye is the location of the eye, distance is the distance between the eye and the draw plate, theta is the rotation around the z axis, phi is the rotation around the xy plane, and alpha is the local rotation around it's center point.
-	void drawImage(std::string image_name, std::string camera_name, int widthPixels, int heightPixels);
+	void drawImage(std::string image_name, std::string camera_name, int widthPixels);
 	
 	void raytrace(Ray* ray,unsigned char pixel[3]);
 	
 	~World()
 	{
+			for (materials_it = materials.begin(); materials_it!=materials.end(); materials_it++) {
+				delete *materials_it;
+			}
+			
 			for (obj_it = obj.begin(); obj_it!=obj.end(); obj_it++) {
 				delete *obj_it;
 			}
@@ -43,6 +47,9 @@ public:
 	}
 private:
 	
+	list<Material*> materials;
+	list<Material*>::iterator materials_it;
+	
 	list<GeoObject*> obj;
 	list<GeoObject*>::iterator obj_it;
 	
@@ -57,5 +64,4 @@ private:
 	double ambientLight[3];
 	
 	static const int SPECULAR_EXP = 100;
-	static const double PIXEL_TO_UNIT = 0.01; // ratio of pixel size to in world units
 };
