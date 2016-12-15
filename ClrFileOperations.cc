@@ -26,12 +26,6 @@ string dtos(double d) // Thanks to stackoverflow use Adam Rosenfield for this co
 
 void loadClrFile(string filePath,list<Material*> *materials,list<GeoObject*> *objects,list<Light*> *lights,list<Camera*> *cameras,double ambientLight[3])
 {
-	//*******************************CHANGE THIS*******************************
-	ambientLight[0] = 0.2;
-	ambientLight[1] = 0.2;
-	ambientLight[2] = 0.2;
-	//************************************************************************
-	
 	string line;
 	ifstream clrFile(filePath);
 	int line_num = 0;
@@ -55,7 +49,17 @@ void loadClrFile(string filePath,list<Material*> *materials,list<GeoObject*> *ob
 					tag = substring(tag,0,tag.find(' '));
 				}
 				
-				if(tag == "material")
+				if(tag == "color")
+				{
+					string content = substring(line,line.find(">")+1,line.find("<",line.find(">")));
+
+					ambientLight[0] = strtod(substring(content,1,content.find(" ",1)).c_str(),NULL);
+					content = substring(content,content.find(" ",1));
+					ambientLight[1] = strtod(substring(content,1,content.find(" ",1)).c_str(),NULL);
+					content = substring(content,content.find(" ",1));
+					ambientLight[2] = strtod(substring(content,1,content.find(" ",1)).c_str(),NULL);
+				}
+				else if(tag == "material")
 				{
 					//cout << "Loading material\n";
 					
@@ -411,9 +415,9 @@ void saveClrFile(string filePath,string author,string scene_name,list<Material*>
 		double *color = (*mat_it)->getAmbient();
 		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		color = (*mat_it)->getDiffuse();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
+		file << "\t\t\t\t<color id='diffuse'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		color = (*mat_it)->getSpecular();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
+		file << "\t\t\t\t<color id='specular'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		
 		file << "\t\t\t</material>\n";
 	}
@@ -427,9 +431,9 @@ void saveClrFile(string filePath,string author,string scene_name,list<Material*>
 		double *color = (*light_it)->getSource();
 		file << "\t\t\t\t<vec3 id='location'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </vec3>\n";
 		color = (*light_it)->getDiffuce();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
+		file << "\t\t\t\t<color id='diffuse'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		color = (*light_it)->getSpecular();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
+		file << "\t\t\t\t<color id='specular'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		
 		file << "\t\t\t</light>\n";
 	}

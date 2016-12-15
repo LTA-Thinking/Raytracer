@@ -152,13 +152,18 @@ void deleteItem(string name)
 	printf("Can't find an item with that name.\n");
 }
 
-void edit(string name,double transform[4][4])
+void edit(string name,double transform[4][4],int append)
 {
+	
 	for(obj_it = obj.begin(); obj_it != obj.end(); obj_it++)
 	{
 		if((*obj_it)->getName() == name)
 		{
-			(*obj_it)->setTransform(transform);
+			if(append == 1)
+				(*obj_it)->appendTransform(transform);
+			else
+				(*obj_it)->setTransform(transform);
+			
 			return;
 		}
 	}
@@ -167,7 +172,10 @@ void edit(string name,double transform[4][4])
 	{
 		if((*cameras_it)->getName() == name)
 		{
-			(*cameras_it)->setTransform(transform);
+			if(append == 1)
+				(*cameras_it)->appendTransform(transform);
+			else
+				(*cameras_it)->setTransform(transform);
 			return;
 		}
 	}
@@ -229,23 +237,40 @@ int parseCommand(string input)
 	
 	if(input == "h" || input == "help")
 	{
-		printf("Help menu not done yet./n");
+		printf("Here are a list of commands:\n");
+		printf("\t-n/new: Creates a new item in the scene.\n");
+		printf("\t-e/edit: Changes the transform matrix of an item.\n");
+		printf("\t-d/delete: Deletes an item from the scene.\n");
+		printf("\t-l/list: Lists all items in the scene.\n");
+		printf("\t-a/ambient: Sets the ambient light level for the scene.\n");
+		printf("\t-o/open: Opens a new scene.\n");
+		printf("\t-s/save: Saves the current scene.\n");
+		printf("\t-h/help: Shows this help text.\n");
+		printf("\t-q/quit: Quits the editor.\n");
 	}
 	else if(input == "n" || input == "new")
 	{
-		printf("New Item\n");
-		
 		saveCheck = 1;
 		
+		printf("Enter type of new item: (l,m,c,o) ");
 		string type = getString();
 		
 		if(type == "l" || type == "light")
 		{
+			printf("New Light\n");
+			
+			printf("Enter name: ");
 			string name = getString();
 			
 			double source[3],diffuce[3],specular[3];
+			
+			printf("Enter location: ");
 			scanf("%lf %lf %lf",&source[0],&source[1],&source[2]);
+			
+			printf("Enter diffuse coeffs: ");
 			scanf("%lf %lf %lf",&diffuce[0],&diffuce[1],&diffuce[2]);
+			
+			printf("Enter specular coeffs: ");
 			scanf("%lf %lf %lf",&specular[0],&specular[1],&specular[2]);
 			
 			Light *light = new Light(name,source,diffuce,specular);
@@ -253,32 +278,45 @@ int parseCommand(string input)
 		}
 		else if(type == "m" || type == "material")
 		{
-			printf("New material\n");
+			printf("New Material\n");
 			
+			printf("Enter name: ");
 			string name = getString();
 			
 			double ambient[3],diffuce[3],specular[3];
+			
+			printf("Enter ambient coeffs: ");
 			scanf("%lf %lf %lf",&ambient[0],&ambient[1],&ambient[2]);
+			
+			printf("Enter diffuse coeffs: ");
 			scanf("%lf %lf %lf",&diffuce[0],&diffuce[1],&diffuce[2]);
+			
+			printf("Enter specular coeffs: ");
 			scanf("%lf %lf %lf",&specular[0],&specular[1],&specular[2]);
 			
-			printf("Making material\n");
 			Material *mat = new Material(name,ambient,diffuce,specular);
-			
-			printf("Adding material\n");
 			materials.push_back(mat);
 		}
 		else if(type == "c" || type == "camera")
 		{
-			printf("new camera\n");
+			printf("New Camera\n");
+			
+			printf("Enter name: ");
 			string name = getString();
 			
 			double angle;
 			int width,height;
+			
+			printf("Enter angle of view: ");
 			scanf("%lf",&angle);
+			
+			printf("Enter width: ");
 			scanf("%d",&width);
+			
+			printf("Enter height: ");
 			scanf("%d",&height);
 			
+			printf("Enter transformation");
 			double transform[4][4];
 			for(int i=0;i<16;i++)
 			{
@@ -290,10 +328,18 @@ int parseCommand(string input)
 		}
 		else if(type == "o" || type == "object")
 		{	
-			string type = getString();
+			printf("New Object\n");
+			
+			printf("Enter name: ");
 			string name = getString();
+			
+			printf("Enter type: ");
+			string type = getString();
+			
+			printf("Enter material's name: ");
 			string mat_name = getString();
 			
+			printf("Enter transform: ");
 			double transform[4][4];
 			for(int i=0;i<16;i++)
 			{
@@ -311,20 +357,29 @@ int parseCommand(string input)
 	{
 		saveCheck = 1;
 		
+		printf("Enter name of item to be edited: ");
 		string name = getString();
 		
+		printf("Append or replace: (a,r) ");
+		string type = getString();
+		int append = 0;
+		if(type == "append" || type == "a")
+			append = 1;
+		
+		printf("Enter transform: ");
 		double transform[4][4];
 		for(int i=0;i<16;i++)
 		{
 			scanf("%lf",&transform[i/4][i%4]);
 		}
 		
-		edit(name,transform);
+		edit(name,transform,append);
 	}
 	else if(input == "d" || input == "delete")
 	{
 		saveCheck = 1;
 		
+		printf("Enter name of item to be deleted: ");
 		string name = getString();
 		
 		deleteItem(name);
@@ -344,6 +399,7 @@ int parseCommand(string input)
 				return 0;
 		}
 		
+		printf("Enter file path: ");
 		string file_name = getString();
 		
 		loadClrFile(file_name,&materials,&obj,&lights,&cameras,ambientLight);
@@ -352,9 +408,13 @@ int parseCommand(string input)
 	{
 		saveCheck = 0;
 		
+		printf("Enter file name: ");
 		string file_name = getString();
 		
-		saveClrFile(file_name,"Default","Scene 1",&materials,&obj,&lights,&cameras,ambientLight);
+		printf("Enter author's name: ");
+		string author = getString();
+		
+		saveClrFile(file_name,author,"Scene 1",&materials,&obj,&lights,&cameras,ambientLight);
 	}
 	else if(input == "q" || input == "quit")
 	{
@@ -368,6 +428,11 @@ int parseCommand(string input)
 			if(check == 'y')
 				return 1;
 		}
+	}
+	else if(input == "a" || input == "ambient")
+	{
+		printf("Enter the ambient light levels for the scene: ");
+		scanf("%lf %lf %lf",&ambientLight[0],&ambientLight[1],&ambientLight[2]);
 	}
 	else
 	{

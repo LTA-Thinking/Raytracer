@@ -22,27 +22,7 @@ class GeoObject
 {
 public:
 
-	GeoObject(std::string name, std::string t, double trans[4][4],Material *m)
-	{
-		mat = new Material(m);
-		for(int i=0;i<4;i++)
-		{
-			for(int j=0;j<4;j++)
-			{
-				transform[i][j] = trans[i][j];
-			}
-		}
-		
-		base_center[0] = 0.0;
-		base_center[1] = 0.0;
-		base_center[2] = 0.0;
-		
-		double ans[3];
-		mat_mult4x1(transform,base_center,ans);
-		copy(ans,center);
-		obj_name = name;
-		type = t;
-	}
+	GeoObject(std::string name, std::string t, double trans[4][4], double max, Material *m);
 
 	double* getCenter() { return center; }
 	
@@ -58,7 +38,20 @@ public:
 		
 		mat_mult4x1(transform,base_center,ans);
 		copy(ans,center);
+		
+		mat_mult4x1(transform,base_max,ans);
+		copy(ans,max_radius);
 	}
+	
+	void appendTransform(double t[4][4])
+	{
+		double ans[4][4];
+		mat_mult4x4(t,transform,ans);
+		
+		setTransform(ans);
+	}
+	
+	int couldHit(Ray* r);
 	
 	Material* getMaterial() { return mat;}
 	
@@ -78,8 +71,12 @@ public:
 	
 protected:
 	
+	double base_max[3];
+	double max_radius[3];
+	
 	double base_center[3];
 	double center[3];
+	
 	double transform[4][4];
 	Material *mat;
 	std::string obj_name;
@@ -95,7 +92,7 @@ class Plane : public GeoObject
 {
 public:
 	
-	Plane(std::string name,double transform[4][4],Material *m): GeoObject(name,"PLANE",transform, m)
+	Plane(std::string name,double transform[4][4],Material *m): GeoObject(name,"PLANE",transform, 1, m)
 	{
 		base_normal_point[0] = 0.0;
 		base_normal_point[1] = 0.0;
@@ -163,7 +160,7 @@ class Sphere: public GeoObject
 {
 public:
 	
-	Sphere(std::string name,double transform[4][4],Material *m): GeoObject(name,"ELLIPSE",transform, m)
+	Sphere(std::string name,double transform[4][4],Material *m): GeoObject(name,"ELLIPSE",transform, 1, m)
 	{
 		base_radius[0] = 0.0;
 		base_radius[1] = 0.0;

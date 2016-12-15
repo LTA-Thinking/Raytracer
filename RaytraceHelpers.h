@@ -164,6 +164,14 @@ public:
 		copy(ans,center);
 	}
 	
+	void appendTransform(double t[4][4])
+	{
+		double ans[4][4];
+		mat_mult4x4(t,transform,ans);
+		
+		setTransform(ans);
+	}
+	
 	void getDirection(double ans[3])
 	{
 		double dir[3] = {0,0,1};

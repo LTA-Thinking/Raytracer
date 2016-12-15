@@ -7,6 +7,57 @@ using std::abs;
 using std::cout;
 using std::endl;
 
+GeoObject::GeoObject(std::string name, std::string t, double trans[4][4], double max, Material *m)
+{
+	mat = new Material(m);
+	for(int i=0;i<4;i++)
+	{
+		for(int j=0;j<4;j++)
+		{
+			transform[i][j] = trans[i][j];
+		}
+	}
+	
+	base_center[0] = 0.0;
+	base_center[1] = 0.0;
+	base_center[2] = 0.0;
+	
+	double ans[3];
+	mat_mult4x1(transform,base_center,ans);
+	copy(ans,center);
+	
+	base_max[0] = max;
+	base_max[1] = 0.0;
+	base_max[2] = 0.0;
+	
+	mat_mult4x1(transform,base_max,ans);
+	copy(ans,max_radius);
+	
+	obj_name = name;
+	type = t;
+}
+
+int GeoObject::couldHit(Ray *r)
+{
+	double dir[3];
+	
+	double ans[3];
+	subtract(max_radius,center,ans);
+	double radius = magnitude(ans);
+	
+	subtract(center,r->getSource(),dir);
+	//cout << "dir " << dir[0] << " " << dir[1] << " " << dir[2] << endl;
+	
+	double dist = magnitude(dir);
+	
+	double x = pow(pow(dist,2)-pow(dotProduct(dir,r->getDirection()),2),0.5);
+
+	if(x>radius)
+		return 0;
+	else
+		return 1;
+}
+
 void Plane::hit(Ray *r, double intersect[3])
 {
 	double normal[3];
@@ -96,7 +147,7 @@ void Sphere::hit(Ray *r,double intersect[3])
 	return;
 }
 
-Tetrahedron::Tetrahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,"TETRAHEDRON",transform, m)
+Tetrahedron::Tetrahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,"TETRAHEDRON",transform, pow(1.5,0.5), m)
 {	
 	base_vertexes[0][0] = 1;
 	base_vertexes[0][1] = 0;
@@ -150,6 +201,13 @@ void Tetrahedron::hit(Ray *r, double intersect[3])
 	double* d = r->getDirection();
 	
 	double v[3][3];
+	
+	if(couldHit(r)==0)
+	{
+		double* source = r->getSource();
+		copy(source,intersect);
+		return;
+	}
 	
 	for(int i=0;i<4;i++)
 	{
@@ -268,7 +326,7 @@ void Tetrahedron::setTransform(double t[4][4])
 	normalize(normals[3],normals[3]);
 }
 
-Dodecahedron::Dodecahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,"DODECAHEDRON",transform, m)
+Dodecahedron::Dodecahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,"DODECAHEDRON",transform, pow(3,0.5), m)
 {
 	double phi = (1+pow(5,0.5))/2;	
 	
@@ -461,6 +519,13 @@ void Dodecahedron::hit(Ray* r,double intersect[3])
 	double* d = r->getDirection();
 	
 	double v[3][3];
+	
+	if(couldHit(r)==0)
+	{
+		double* source = r->getSource();
+		copy(source,intersect);
+		return;
+	}
 	
 	for(int i=0;i<12;i++)
 	{
