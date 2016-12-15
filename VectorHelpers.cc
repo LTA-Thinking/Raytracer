@@ -156,3 +156,12 @@ void copy(double x[], double copy[])
 		copy[i] = x[i];
 	}
 }
+
+void copy4x4(double x[4][4],double copy[4][4])
+{
+	for(int i=0;i<4;i++)
+	{
+		for(int k=0;k<4;k++)
+			copy[i][k] = x[i][k];
+	}
+}

@@ -109,7 +109,7 @@ class Camera
 {
 public:
 	// change this to use a normal transform matrix, or a direction vector
-	Camera(std::string n,double t[4][4],double angle,int w,int h)
+	Camera(std::string n,double t[4][4],double angle,double w,double h)
 	{
 		name = n;
 		
@@ -121,12 +121,12 @@ public:
 			}
 		}
 		
-		center[0] = 0;
-		center[1] = 0;
-		center[2] = 0;
+		base_center[0] = 0;
+		base_center[1] = 0;
+		base_center[2] = 0;
 		
 		double ans[3];
-		mat_mult4x1(transform,center,ans);
+		mat_mult4x1(transform,base_center,ans);
 		copy(ans,center);
 		
 		view_angle = angle;
@@ -139,6 +139,20 @@ public:
 	double getWidth(){return width;}
 	double getHeight(){return height;}
 	double* getCenter(){return center;}
+	
+	double* getTransform0(){return transform[0];}
+	double* getTransform1(){return transform[1];}
+	double* getTransform2(){return transform[2];}
+	double* getTransform3(){return transform[3];}
+	
+	void setTransform(double t[4][4])
+	{
+		copy4x4(t,transform);
+		
+		double ans[3];
+		mat_mult4x1(transform,base_center,ans);
+		copy(ans,center);
+	}
 	
 	void getDirection(double ans[3])
 	{
@@ -162,6 +176,7 @@ public:
 private:
 	
 	std::string name;
+	double base_center[3];
 	double center[3];
 	double transform[4][4];
 	double view_angle,width,height;

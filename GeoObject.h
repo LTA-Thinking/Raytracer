@@ -22,25 +22,26 @@ class GeoObject
 {
 public:
 
-	GeoObject(std::string name, double transform[4][4],Material *m)
+	GeoObject(std::string name, std::string t, double trans[4][4],Material *m)
 	{
 		mat = new Material(m);
 		for(int i=0;i<4;i++)
 		{
 			for(int j=0;j<4;j++)
 			{
-				transformation[i][j] = transform[i][j];
+				transform[i][j] = trans[i][j];
 			}
 		}
 		
-		center[0] = 0.0;
-		center[1] = 0.0;
-		center[2] = 0.0;
+		base_center[0] = 0.0;
+		base_center[1] = 0.0;
+		base_center[2] = 0.0;
 		
 		double ans[3];
-		mat_mult4x1(transform,center,ans);
+		mat_mult4x1(transform,base_center,ans);
 		copy(ans,center);
 		obj_name = name;
+		type = t;
 	}
 
 	double* getCenter() { return center; }
@@ -49,9 +50,26 @@ public:
 
 	virtual void getNormal(double loc[3],double ans[3]) {} 
 	
+	virtual void setTransform(double t[4][4]) 
+	{
+		copy4x4(t,transform);
+		
+		double ans[3];
+		
+		mat_mult4x1(transform,base_center,ans);
+		copy(ans,center);
+	}
+	
 	Material* getMaterial() { return mat;}
 	
 	std::string getName() {return obj_name;}
+	
+	std::string getType() {return type;}
+	
+	double* getTransform0(){return transform[0];}
+	double* getTransform1(){return transform[1];}
+	double* getTransform2(){return transform[2];}
+	double* getTransform3(){return transform[3];}
 	
 	~GeoObject()
 	{
@@ -60,10 +78,12 @@ public:
 	
 protected:
 	
+	double base_center[3];
 	double center[3];
-	double transformation[4][4];
+	double transform[4][4];
 	Material *mat;
 	std::string obj_name;
+	std::string type;
 	
 };
 
@@ -75,29 +95,29 @@ class Plane : public GeoObject
 {
 public:
 	
-	Plane(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
+	Plane(std::string name,double transform[4][4],Material *m): GeoObject(name,"PLANE",transform, m)
 	{
-		normal_point[0] = 0.0;
-		normal_point[1] = 0.0;
-		normal_point[2] = 1.0;
+		base_normal_point[0] = 0.0;
+		base_normal_point[1] = 0.0;
+		base_normal_point[2] = 1.0;
 		
-		x_distance_point[0] = 1.0;
-		x_distance_point[1] = 0.0;
-		x_distance_point[2] = 0.0;
+		base_x_point[0] = 1.0;
+		base_x_point[1] = 0.0;
+		base_x_point[2] = 0.0;
 		
-		y_distance_point[0] = 0.0;
-		y_distance_point[1] = 1.0;
-		y_distance_point[2] = 0.0;
+		base_y_point[0] = 0.0;
+		base_y_point[1] = 1.0;
+		base_y_point[2] = 0.0;
 		
 		double ans[3];
 		
-		mat_mult4x1(transform,normal_point,ans);
+		mat_mult4x1(transform,base_normal_point,ans);
 		copy(ans,normal_point);
 		
-		mat_mult4x1(transform,x_distance_point,ans);
+		mat_mult4x1(transform,base_x_point,ans);
 		copy(ans,x_distance_point);
 		
-		mat_mult4x1(transform,y_distance_point,ans);
+		mat_mult4x1(transform,base_y_point,ans);
 		copy(ans,y_distance_point);
 	}
 	
@@ -109,7 +129,27 @@ public:
 		normalize(ans,ans);
 	}
 	
+	void setTransform(double t[4][4])
+	{
+		GeoObject::setTransform(t);
+			
+		double ans[3];
+		
+		mat_mult4x1(transform,base_normal_point,ans);
+		copy(ans,normal_point);
+		
+		mat_mult4x1(transform,base_x_point,ans);
+		copy(ans,x_distance_point);
+		
+		mat_mult4x1(transform,base_y_point,ans);
+		copy(ans,y_distance_point);
+	}
+	
 private:
+	
+	double base_normal_point[3];
+	double base_x_point[3];
+	double base_y_point[3];
 	
 	double normal_point[3];
 	double x_distance_point[3];
@@ -123,14 +163,14 @@ class Sphere: public GeoObject
 {
 public:
 	
-	Sphere(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
+	Sphere(std::string name,double transform[4][4],Material *m): GeoObject(name,"ELLIPSE",transform, m)
 	{
-		radius_point[0] = 0.0;
-		radius_point[1] = 0.0;
-		radius_point[2] = 1.0;
+		base_radius[0] = 0.0;
+		base_radius[1] = 0.0;
+		base_radius[2] = 1.0;
 		
 		double ans[3];
-		mat_mult4x1(transform,radius_point,ans);
+		mat_mult4x1(transform,base_radius,ans);
 		copy(ans,radius_point);
 	}
 	
@@ -142,8 +182,20 @@ public:
 		normalize(ans,ans);
 	}
 	
+	void setTransform(double t[4][4])
+	{
+		GeoObject::setTransform(t);
+		
+		double ans[3];
+		
+		mat_mult4x1(transform,base_radius,ans);
+		copy(ans,radius_point);
+		
+	}
+	
 private:
 
+	double base_radius[3];
 	double radius_point[3];
 };
 
@@ -156,11 +208,15 @@ public:
 	
 	Tetrahedron(std::string name,double transform[4][4],Material *m);
 	
-	void hit(Ray* r,double* intersect);
+	void hit(Ray* r,double intersect[3]);
 	
-	void getNormal(double* loc,double* ans);
+	void getNormal(double loc[3],double ans[3]);
+	
+	void setTransform(double t[4][4]);
 	
 private:
+	
+	double base_vertexes[4][3];
 	
 	double vertexes[4][3];
 	double normals[4][3];
@@ -180,7 +236,11 @@ public:
 	
 	void getNormal(double loc[3],double ans[3]);
 	
+	void setTransform(double t[4][4]);
+	
 private:
+	
+	double base_vertexes[20][3];
 	
 	double vertexes[20][3];
 	double normals[12][3];

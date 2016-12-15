@@ -96,37 +96,37 @@ void Sphere::hit(Ray *r,double intersect[3])
 	return;
 }
 
-Tetrahedron::Tetrahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
+Tetrahedron::Tetrahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,"TETRAHEDRON",transform, m)
 {	
-	vertexes[0][0] = 1;
-	vertexes[0][1] = 0;
-	vertexes[0][2] = -1/pow(2,0.5);
+	base_vertexes[0][0] = 1;
+	base_vertexes[0][1] = 0;
+	base_vertexes[0][2] = -1/pow(2,0.5);
 	
-	vertexes[1][0] = -1;
-	vertexes[1][1] = 0;
-	vertexes[1][2] = -1/pow(2,0.5);
+	base_vertexes[1][0] = -1;
+	base_vertexes[1][1] = 0;
+	base_vertexes[1][2] = -1/pow(2,0.5);
 	
-	vertexes[2][0] = 0;
-	vertexes[2][1] = 1;
-	vertexes[2][2] = 1/pow(2,0.5);
+	base_vertexes[2][0] = 0;
+	base_vertexes[2][1] = 1;
+	base_vertexes[2][2] = 1/pow(2,0.5);
 	
-	vertexes[3][0] = 0;
-	vertexes[3][1] = -1;
-	vertexes[3][2] = 1/pow(2,0.5);
+	base_vertexes[3][0] = 0;
+	base_vertexes[3][1] = -1;
+	base_vertexes[3][2] = 1/pow(2,0.5);
 	
 	
 	double ans[3];
 	
-	mat_mult4x1(transform,vertexes[0],ans);
+	mat_mult4x1(transform,base_vertexes[0],ans);
 	copy(ans,vertexes[0]);
 	
-	mat_mult4x1(transform,vertexes[1],ans);
+	mat_mult4x1(transform,base_vertexes[1],ans);
 	copy(ans,vertexes[1]);
 	
-	mat_mult4x1(transform,vertexes[2],ans);
+	mat_mult4x1(transform,base_vertexes[2],ans);
 	copy(ans,vertexes[2]);
 	
-	mat_mult4x1(transform,vertexes[3],ans);
+	mat_mult4x1(transform,base_vertexes[3],ans);
 	copy(ans,vertexes[3]);
 	
 	
@@ -143,7 +143,7 @@ Tetrahedron::Tetrahedron(std::string name,double transform[4][4],Material *m): G
 	normalize(normals[3],normals[3]);
 }
 
-void Tetrahedron::hit(Ray *r, double *intersect)
+void Tetrahedron::hit(Ray *r, double intersect[3])
 {
 	double beta, gamma, t, det, bottom, minDis = 100000;
 	double* s = r->getSource();
@@ -208,7 +208,7 @@ void Tetrahedron::hit(Ray *r, double *intersect)
 	}
 }
 
-void Tetrahedron::getNormal(double *loc, double *ans)
+void Tetrahedron::getNormal(double loc[3], double ans[3])
 {
 	double beta, gamma, z;
 		
@@ -236,94 +236,126 @@ void Tetrahedron::getNormal(double *loc, double *ans)
 	ans[2] = 0;
 }
 
-Dodecahedron::Dodecahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,transform, m)
+void Tetrahedron::setTransform(double t[4][4])
+{
+	GeoObject::setTransform(t);
+	
+	double ans[3];
+	
+	mat_mult4x1(transform,base_vertexes[0],ans);
+	copy(ans,vertexes[0]);
+	
+	mat_mult4x1(transform,base_vertexes[1],ans);
+	copy(ans,vertexes[1]);
+	
+	mat_mult4x1(transform,base_vertexes[2],ans);
+	copy(ans,vertexes[2]);
+	
+	mat_mult4x1(transform,base_vertexes[3],ans);
+	copy(ans,vertexes[3]);
+	
+	
+	subtract(center,vertexes[0],normals[0]);
+	normalize(normals[0],normals[0]);
+	
+	subtract(center,vertexes[1],normals[1]);
+	normalize(normals[1],normals[1]);
+	
+	subtract(center,vertexes[2],normals[2]);
+	normalize(normals[2],normals[2]);
+	
+	subtract(center,vertexes[3],normals[3]);
+	normalize(normals[3],normals[3]);
+}
+
+Dodecahedron::Dodecahedron(std::string name,double transform[4][4],Material *m): GeoObject(name,"DODECAHEDRON",transform, m)
 {
 	double phi = (1+pow(5,0.5))/2;	
 	
-	vertexes[0][0] = 1;
-	vertexes[0][1] = 1;
-	vertexes[0][2] = 1;
+	base_vertexes[0][0] = 1;
+	base_vertexes[0][1] = 1;
+	base_vertexes[0][2] = 1;
 	
-	vertexes[1][0] = -1;
-	vertexes[1][1] = 1;
-	vertexes[1][2] = 1;
+	base_vertexes[1][0] = -1;
+	base_vertexes[1][1] = 1;
+	base_vertexes[1][2] = 1;
 	
-	vertexes[2][0] = 1;
-	vertexes[2][1] = -1;
-	vertexes[2][2] = 1;
+	base_vertexes[2][0] = 1;
+	base_vertexes[2][1] = -1;
+	base_vertexes[2][2] = 1;
 	
-	vertexes[3][0] = -1;
-	vertexes[3][1] = -1;
-	vertexes[3][2] = 1;
+	base_vertexes[3][0] = -1;
+	base_vertexes[3][1] = -1;
+	base_vertexes[3][2] = 1;
 	
-	vertexes[4][0] = 1;
-	vertexes[4][1] = 1;
-	vertexes[4][2] = -1;
+	base_vertexes[4][0] = 1;
+	base_vertexes[4][1] = 1;
+	base_vertexes[4][2] = -1;
 	
-	vertexes[5][0] = -1;
-	vertexes[5][1] = 1;
-	vertexes[5][2] = -1;
+	base_vertexes[5][0] = -1;
+	base_vertexes[5][1] = 1;
+	base_vertexes[5][2] = -1;
 	
-	vertexes[6][0] = 1;
-	vertexes[6][1] = -1;
-	vertexes[6][2] = -1;
+	base_vertexes[6][0] = 1;
+	base_vertexes[6][1] = -1;
+	base_vertexes[6][2] = -1;
 	
-	vertexes[7][0] = -1;
-	vertexes[7][1] = -1;
-	vertexes[7][2] = -1;
+	base_vertexes[7][0] = -1;
+	base_vertexes[7][1] = -1;
+	base_vertexes[7][2] = -1;
 	
-	vertexes[8][0] = 0;
-	vertexes[8][1] = 1/phi;
-	vertexes[8][2] = phi;
+	base_vertexes[8][0] = 0;
+	base_vertexes[8][1] = 1/phi;
+	base_vertexes[8][2] = phi;
 	
-	vertexes[9][0] = 0;
-	vertexes[9][1] = -1/phi;
-	vertexes[9][2] = phi;
+	base_vertexes[9][0] = 0;
+	base_vertexes[9][1] = -1/phi;
+	base_vertexes[9][2] = phi;
 	
-	vertexes[10][0] = 0;
-	vertexes[10][1] = 1/phi;
-	vertexes[10][2] = -phi;
+	base_vertexes[10][0] = 0;
+	base_vertexes[10][1] = 1/phi;
+	base_vertexes[10][2] = -phi;
 	
-	vertexes[11][0] = 0;
-	vertexes[11][1] = -1/phi;
-	vertexes[11][2] = -phi;
+	base_vertexes[11][0] = 0;
+	base_vertexes[11][1] = -1/phi;
+	base_vertexes[11][2] = -phi;
 	
-	vertexes[12][0] = 1/phi;
-	vertexes[12][1] = phi;
-	vertexes[12][2] = 0;
+	base_vertexes[12][0] = 1/phi;
+	base_vertexes[12][1] = phi;
+	base_vertexes[12][2] = 0;
 	
-	vertexes[13][0] = -1/phi;
-	vertexes[13][1] = phi;
-	vertexes[13][2] = 0;
+	base_vertexes[13][0] = -1/phi;
+	base_vertexes[13][1] = phi;
+	base_vertexes[13][2] = 0;
 	
-	vertexes[14][0] = 1/phi;
-	vertexes[14][1] = -phi;
-	vertexes[14][2] = 0;
+	base_vertexes[14][0] = 1/phi;
+	base_vertexes[14][1] = -phi;
+	base_vertexes[14][2] = 0;
 	
-	vertexes[15][0] = -1/phi;
-	vertexes[15][1] = -phi;
-	vertexes[15][2] = 0;
+	base_vertexes[15][0] = -1/phi;
+	base_vertexes[15][1] = -phi;
+	base_vertexes[15][2] = 0;
 	
-	vertexes[16][0] = phi;
-	vertexes[16][1] = 0;
-	vertexes[16][2] = 1/phi;
+	base_vertexes[16][0] = phi;
+	base_vertexes[16][1] = 0;
+	base_vertexes[16][2] = 1/phi;
 	
-	vertexes[17][0] = phi;
-	vertexes[17][1] = 0;
-	vertexes[17][2] = -1/phi;
+	base_vertexes[17][0] = phi;
+	base_vertexes[17][1] = 0;
+	base_vertexes[17][2] = -1/phi;
 	
-	vertexes[18][0] = -phi;
-	vertexes[18][1] = 0;
-	vertexes[18][2] = 1/phi;
+	base_vertexes[18][0] = -phi;
+	base_vertexes[18][1] = 0;
+	base_vertexes[18][2] = 1/phi;
 	
-	vertexes[19][0] = -phi;
-	vertexes[19][1] = 0;
-	vertexes[19][2] = -1/phi;
+	base_vertexes[19][0] = -phi;
+	base_vertexes[19][1] = 0;
+	base_vertexes[19][2] = -1/phi;
 	
 	double ans[3];
 	for(int i=0;i<20;i++)
 	{
-		mat_mult4x1(transform,vertexes[i],ans);
+		mat_mult4x1(transform,base_vertexes[i],ans);
 		copy(ans,vertexes[i]);
 	}
 	
@@ -512,4 +544,38 @@ void Dodecahedron::getNormal(double loc[3], double ans[3])
 	ans[0] = 0;
 	ans[1] = 0;
 	ans[2] = 0;
+}
+
+void Dodecahedron::setTransform(double t[4][4])
+{
+	GeoObject::setTransform(t);
+	
+	double ans[3];
+	for(int i=0;i<20;i++)
+	{
+		mat_mult4x1(transform,base_vertexes[i],ans);
+		copy(ans,vertexes[i]);
+	}
+	
+	for(int i=0;i<12;i++)
+	{
+		double vec1[3],vec2[3];
+		
+		subtract(vertexes[faces[i][1]],vertexes[faces[i][0]],vec1);
+		subtract(vertexes[faces[i][2]],vertexes[faces[i][0]],vec2);
+		
+		crossProduct3(vec1,vec2,normals[i]);
+		
+		subtract(vertexes[faces[i][0]],center,vec1);
+		
+		normalize(normals[i],normals[i]);
+		normalize(vec1,vec1);
+		
+		if(dotProduct(vec1,normals[i])<0)
+		{
+			normals[i][0] = -normals[i][0];
+			normals[i][1] = -normals[i][1];
+			normals[i][2] = -normals[i][2];
+		}
+	}
 }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
+#include <sstream>
 
 string substring(string s,int start,int end)
 {
@@ -14,7 +15,16 @@ string substring(string s,int start)
 	return s.substr(start);
 }
 
-void loadClrFileForRaytrace(string filePath,list<Material*> *materials,list<GeoObject*> *objects,list<Light*> *lights,list<Camera*> *cameras,double ambientLight[3])
+string dtos(double d) // Thanks to stackoverflow use Adam Rosenfield for this code
+{
+	std::ostringstream sstream;
+	sstream << d;
+	string varAsString = sstream.str();
+	
+	return varAsString;
+}
+
+void loadClrFile(string filePath,list<Material*> *materials,list<GeoObject*> *objects,list<Light*> *lights,list<Camera*> *cameras,double ambientLight[3])
 {
 	//*******************************CHANGE THIS*******************************
 	ambientLight[0] = 0.2;
@@ -369,4 +379,113 @@ void loadClrFileForRaytrace(string filePath,list<Material*> *materials,list<GeoO
 	}
 	else
 		cout << "Error opening file\n";
+}
+
+void saveClrFile(string filePath,string author,string scene_name,list<Material*> *materials,list<GeoObject*> *objects,list<Light*> *lights,list<Camera*> *cameras,double ambientLight[3])
+{	
+	filePath += ".clr";
+	
+	ofstream file;
+	file.open(filePath);
+	
+	file << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+	file << "<CLEAR version='0.1'>\n";
+	file << "/t<file_information>\n";
+	file << "\t\t<author>" << author << "</author>\n";
+	file << "\t\t<authoring_tool> CLEAR File Editor </authoring_tool>\n";
+	file << "\t\t<created></created>\n";
+	file << "\t\t<modified></modified>\n";
+	file << "\t</file_information>\n";
+	
+	file << "\t<scene>\n";
+	file << "\t\t<string id='name'> " << scene_name << "</string>\n";
+	file << "\t\t<color id='ambient'> " << dtos(ambientLight[0]) << " " << dtos(ambientLight[1]) << " " << dtos(ambientLight[2]) << " </color>\n";
+	file << "\t\t<assets>\n";
+	
+	list<Material*>::iterator mat_it;
+	for(mat_it = materials->begin(); mat_it != materials->end(); mat_it++)
+	{
+		file << "\t\t\t<material>\n";
+		file << "\t\t\t\t<string id='name'>" << (*mat_it)->getName().c_str() << "</string>\n";
+		
+		double *color = (*mat_it)->getAmbient();
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		color = (*mat_it)->getDiffuse();
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		color = (*mat_it)->getSpecular();
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		
+		file << "\t\t\t</material>\n";
+	}
+	
+	list<Light*>::iterator light_it;
+	for(light_it = lights->begin(); light_it != lights->end(); light_it++)
+	{
+		file << "\t\t\t<light>\n";
+		file << "\t\t\t\t<string id='name'>" << (*light_it)->getName().c_str() << "</string>\n";
+		
+		double *color = (*light_it)->getSource();
+		file << "\t\t\t\t<vec3 id='location'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </vec3>/n";
+		color = (*light_it)->getDiffuce();
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		color = (*light_it)->getSpecular();
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		
+		file << "\t\t\t</light>\n";
+	}
+	
+	list<Camera*>::iterator camera_it;
+	for(camera_it = cameras->begin(); camera_it != cameras->end(); camera_it++)
+	{
+		file << "\t\t\t<camera>\n";
+		file << "\t\t\t\t<string id='name'>" << (*camera_it)->getName().c_str() << "</string>\n";
+		
+		file << "\t\t\t\t<mat4 id='transform'>\n";
+		double *transform = (*camera_it)->getTransform0();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		transform = (*camera_it)->getTransform1();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		transform = (*camera_it)->getTransform2();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		transform = (*camera_it)->getTransform3();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		file << "\t\t\t\t</mat4>\n";
+		
+		file << "\t\t\t\t<float id='angle'> " << dtos((*camera_it)->getAngle()) << " </float>\n";
+		file << "\t\t\t\t<float id='width'> " << dtos((*camera_it)->getWidth()) << " </float>\n";
+		file << "\t\t\t\t<float id='height'> " << dtos((*camera_it)->getHeight()) << " </float>\n";
+		
+		file << "\t\t\t</camera>\n";
+	}
+	
+	file << "\t\t</assets>\n";
+	file << "\t\t<entities>\n";
+	
+	list<GeoObject*>::iterator obj_it;
+	for(obj_it = objects->begin(); obj_it != objects->end(); obj_it++)
+	{
+		file << "\t\t\t<object>\n";
+		file << "\t\t\t\t<string id='name'>" << (*obj_it)->getName().c_str() << "</string>\n";
+		file << "\t\t\t\t<string id='type'>" << (*obj_it)->getType().c_str() << "</string>\n";
+		file << "\t\t\t\t<string id='material_name'>" << (*obj_it)->getMaterial()->getName().c_str() << "</string>\n";
+		
+		file << "\t\t\t\t<mat4 id='transform'>\n";
+		double *transform = (*obj_it)->getTransform0();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		transform = (*obj_it)->getTransform1();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		transform = (*obj_it)->getTransform2();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		transform = (*obj_it)->getTransform3();
+		file << "\t\t\t\t\t<vec4> " << dtos(transform[0]) << " " << dtos(transform[1]) << " " << dtos(transform[2]) << " " << dtos(transform[3]) << " </vec4>\n";
+		file << "\t\t\t\t</mat4>\n";
+		
+		file << "\t\t\t</object>\n";
+	}
+	
+	file << "\t\t</entities>\n";
+	file << "\t</scene>\n";
+	file << "</CLEAR>\n";
+	
+	file.close();
 }

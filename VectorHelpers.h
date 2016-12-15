@@ -36,3 +36,5 @@ void transpose4(double x[4][4],double ans[4][4]);
 
 void copy(double x[],double copy[]);
 
+void copy4x4(double x[4][4],double copy[4][4]);
+

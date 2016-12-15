@@ -9,7 +9,7 @@ using std::endl;
 
 World::World(std::string path)
 {
-		loadClrFileForRaytrace(path,&materials,&obj,&lights,&cameras,ambientLight);
+		loadClrFile(path,&materials,&obj,&lights,&cameras,ambientLight);
 }
 
 void World::drawImage(std::string image_name, std::string camera_name, int widthPixels) 
