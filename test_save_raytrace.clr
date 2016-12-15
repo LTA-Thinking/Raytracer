@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CLEAR version='0.1'>
+/t<file_information>
+		<author>Default</author>
+		<authoring_tool> CLEAR File Editor </authoring_tool>
+		<created></created>
+		<modified></modified>
+	</file_information>
+	<scene>
+		<string id='name'> Scene 1</string>
+		<color id='ambient'> 0 0 0 </color>
+		<assets>
+			<material>
+				<string id='name'>Mat1</string>
+				<color id='ambient'> 0 0 0 </color>
+				<color id='diffuse'> 0.7 0.5 0 </color>
+				<color id='specular'> 0.3 0.3 0.3 </color>
+			</material>
+			<light>
+				<string id='name'>Light1</string>
+				<vec3 id='location'> 1 0 2 </vec3>
+				<color id='diffuse'> 0.7 0.7 0.7 </color>
+				<color id='specular'> 0.3 0.3 0.3 </color>
+			</light>
+			<camera>
+				<string id='name'>Cam1</string>
+				<mat4 id='transform'>
+					<vec4> 1 0 0 0 </vec4>
+					<vec4> 0 1 0 0 </vec4>
+					<vec4> 0 0 1 0 </vec4>
+					<vec4> 0 0 0 1 </vec4>
+				</mat4>
+				<float id='angle'> 0.73 </float>
+				<float id='width'> 3 </float>
+				<float id='height'> 2 </float>
+			</camera>
+		</assets>
+		<entities>
+			<object>
+				<string id='name'>Sphere1</string>
+				<string id='type'>ELLIPSE</string>
+				<string id='material_name'>Mat1</string>
+				<mat4 id='transform'>
+					<vec4> 1 0 0 0 </vec4>
+					<vec4> 0 1 0 0 </vec4>
+					<vec4> 0 0 1 4 </vec4>
+					<vec4> 0 0 0 1 </vec4>
+				</mat4>
+			</object>
+		</entities>
+	</scene>
+</CLEAR>

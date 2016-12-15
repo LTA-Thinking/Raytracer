@@ -390,7 +390,7 @@ void saveClrFile(string filePath,string author,string scene_name,list<Material*>
 	
 	file << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 	file << "<CLEAR version='0.1'>\n";
-	file << "/t<file_information>\n";
+	file << "\t<file_information>\n";
 	file << "\t\t<author>" << author << "</author>\n";
 	file << "\t\t<authoring_tool> CLEAR File Editor </authoring_tool>\n";
 	file << "\t\t<created></created>\n";
@@ -409,11 +409,11 @@ void saveClrFile(string filePath,string author,string scene_name,list<Material*>
 		file << "\t\t\t\t<string id='name'>" << (*mat_it)->getName().c_str() << "</string>\n";
 		
 		double *color = (*mat_it)->getAmbient();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		color = (*mat_it)->getDiffuse();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		color = (*mat_it)->getSpecular();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		
 		file << "\t\t\t</material>\n";
 	}
@@ -425,11 +425,11 @@ void saveClrFile(string filePath,string author,string scene_name,list<Material*>
 		file << "\t\t\t\t<string id='name'>" << (*light_it)->getName().c_str() << "</string>\n";
 		
 		double *color = (*light_it)->getSource();
-		file << "\t\t\t\t<vec3 id='location'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </vec3>/n";
+		file << "\t\t\t\t<vec3 id='location'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </vec3>\n";
 		color = (*light_it)->getDiffuce();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		color = (*light_it)->getSpecular();
-		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>/n";
+		file << "\t\t\t\t<color id='ambient'> " << dtos(color[0]) << " " << dtos(color[1]) << " " << dtos(color[2]) << " </color>\n";
 		
 		file << "\t\t\t</light>\n";
 	}

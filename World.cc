@@ -23,16 +23,20 @@ void World::drawImage(std::string image_name, std::string camera_name, int width
 		if((*camera_it)->getName() == camera_name)
 		{
 			main_camera = *camera_it;
+			//double *cen = main_camera->getCenter();
+			//printf("cam center: %lf %lf %lf\n",cen[0],cen[1],cen[2]);
 			break;
 		}
 	}
 	
-	for(obj_it = obj.begin();obj_it != obj.end();obj_it++)
+	/*for(obj_it = obj.begin();obj_it != obj.end();obj_it++)
 	{
 		printf("%s %s \n",(*obj_it)->getName().c_str(),(*obj_it)->getMaterial()->getName().c_str());
-	}
+		double *cen = (*obj_it)->getCenter();
+		printf("obj center: %lf %lf %lf\n",cen[0],cen[1],cen[2]);
+	}*/
 		
-	printf("%d %d %d %d \n",materials.size(),lights.size(),cameras.size(),obj.size());
+	//printf("%d %d %d %d \n",materials.size(),lights.size(),cameras.size(),obj.size());
 	
 	int heightPixels = (main_camera->getHeight()*widthPixels)/main_camera->getWidth();
 	
@@ -55,8 +59,8 @@ void World::drawImage(std::string image_name, std::string camera_name, int width
 	multiply(-distance,eye_dir,eye_dir);
 	add(cen,eye_dir,eye);
 	
-	printf("eye %f %f %f \n",eye[0],eye[1],eye[2]);
-	cout << "starting to find pixels " << output.getRows() << " " << output.getCols() << endl;
+	//printf("eye %f %f %f \n",eye[0],eye[1],eye[2]);
+	cout << "starting to find pixels " << endl;//<< output.getRows() << " " << output.getCols() << endl;
 	
 	for (int i = 0; i < output.getRows(); i++) 
 	{
@@ -64,7 +68,7 @@ void World::drawImage(std::string image_name, std::string camera_name, int width
 		{
 			
 			double cord [3];
-			main_camera->screenCoordinate((double)i/widthPixels,(double)j/heightPixels,cord);
+			main_camera->screenCoordinate((double)j/widthPixels,(double)i/heightPixels,cord);
 			
 			double dir[3];
 			subtract(cord,eye,dir);

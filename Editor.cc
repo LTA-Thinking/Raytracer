@@ -189,7 +189,7 @@ void newObject(string type,string name,string mat_name,double transform[4][4])
 	
 	if(mat == NULL)
 	{
-		printf("Material not found");
+		printf("Material not found\n");
 	}
 	
 	if(type =="sphere")
@@ -358,7 +358,7 @@ int parseCommand(string input)
 	}
 	else if(input == "q" || input == "quit")
 	{
-		if(saveCheck = 0)
+		if(saveCheck == 0)
 			return 1;
 		else
 		{

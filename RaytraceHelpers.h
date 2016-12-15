@@ -51,14 +51,24 @@ public:
 	
 	Material(Material *m)
 	{
-		name = m->getName();
-		double *a = m->getAmbient();
-		double *d = m->getDiffuse();
-		double *s = m->getSpecular();
-		
-		copy(a,ambient);
-		copy(d,diffuse);
-		copy(s,specular);
+		if(m != NULL)
+		{
+			name = m->getName();
+			double *a = m->getAmbient();
+			double *d = m->getDiffuse();
+			double *s = m->getSpecular();
+			
+			copy(a,ambient);
+			copy(d,diffuse);
+			copy(s,specular);
+		}
+		else
+		{
+			double zeros[3] = {0.0,0.0,0.0};
+			copy(zeros,ambient);
+			copy(zeros,diffuse);
+			copy(zeros,specular);
+		}
 	}
 	
 	std::string getName(){return name;}
